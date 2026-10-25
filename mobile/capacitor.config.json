@@ -1,0 +1,7 @@
+{
+  "appId": "com.creatorhub.app",
+  "appName": "Creator Hub",
+  "webDir": "www",
+  "backgroundColor": "#121516",
+  "server": { "androidScheme": "https" }
+}

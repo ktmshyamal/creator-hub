@@ -156,6 +156,15 @@ async function saveBlob(blob, filename, okMsg) {
     catch (err) { if (!err || err.code !== "declined") toast("Could not save the file here."); }
     return;
   }
+  const cap = window.Capacitor, P = cap && cap.isNativePlatform && cap.isNativePlatform() ? cap.Plugins : null;
+  if (P && P.Filesystem && P.Share) {
+    try {
+      const data = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(",")[1]); r.onerror = rej; r.readAsDataURL(blob); });
+      const out = await P.Filesystem.writeFile({ path: filename, data, directory: "CACHE" });
+      await P.Share.share({ title: filename, url: out.uri, dialogTitle: "Save or send" }); toast(okMsg);
+    } catch (e) { if (!e || !/cancel/i.test(String(e.message || e))) toast("Could not save the file here."); }
+    return;
+  }
   try {
     const a = document.createElement("a"), url = URL.createObjectURL(blob);
     a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
